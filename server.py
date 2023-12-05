@@ -53,6 +53,32 @@ def commit_transaction():
             dump_data(current_data)
     return jsonify({'message': 'Commit successful'}), 200
 
+# @app.route('/read', methods=['GET'])
+# def read():
+#     transaction_id = int(request.args.get('transaction_id'))
+#     key = request.args.get('key')
+#     with data_lock:
+#         current_data = load_data()
+#         print(current_data)
+#         transactions = current_data['transactions']
+#         data = current_data['data']
+
+#         transaction = transactions.get(transaction_id, {'changes': {}, 'start_time': time.time()})
+#         if key in transaction['changes']:
+#             value = transaction['changes'][key]
+#             version = len(data.get(key, [])) + 1
+#             timestamp = transaction['start_time']
+#         else:
+#             if key in data:
+#                 versions = data[key]
+#                 # Get the latest version
+#                 value, version, timestamp = max(versions, key=lambda x: x[2])
+#             else:
+#                 value, version, timestamp = None, None, None
+
+#         readable_timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp)) if timestamp else None
+#     return jsonify({'value': value, 'version': version, 'timestamp': readable_timestamp}), 200
+
 @app.route('/read', methods=['GET'])
 def read():
     transaction_id = int(request.args.get('transaction_id'))
@@ -64,16 +90,21 @@ def read():
 
         transaction = transactions.get(transaction_id, {'changes': {}, 'start_time': time.time()})
         if key in transaction['changes']:
+            # If the key has been modified in the current transaction, return the modified value
             value = transaction['changes'][key]
             version = len(data.get(key, [])) + 1
             timestamp = transaction['start_time']
         else:
             if key in data:
                 versions = data[key]
-                # Get the latest version
-                value, version, timestamp = max(versions, key=lambda x: x[2])
+                # Get the latest committed version (excluding the current transaction changes)
+                committed_versions = [v for v in versions if v[2] < transaction['start_time']]
+                if committed_versions:
+                    value, version, timestamp = max(committed_versions, key=lambda x: x[2])
+                else:
+                    value, version, timestamp = (None, None, None)
             else:
-                value, version, timestamp = None, None, None
+                value, version, timestamp = (None, None, None)
 
         readable_timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp)) if timestamp else None
     return jsonify({'value': value, 'version': version, 'timestamp': readable_timestamp}), 200
