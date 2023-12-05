@@ -29,7 +29,6 @@ You can install Flask and requests using pip:
 
 ```
 pip install Flask requests
-
 ```
 
 ### **Installation**
@@ -37,10 +36,8 @@ pip install Flask requests
 Clone the GitHub repository:
 
 ```
-
 git clone https://github.com/codewithhritik/273-mvcc.git
 cd 273-mvcc
-
 ```
 
 ### **Running the Server**
@@ -50,7 +47,6 @@ Navigate to the server directory and run the Flask application:
 ```
 cd server
 python server.py
-
 ```
 
 ### **Running the Client**
@@ -60,7 +56,6 @@ Open a new terminal window and navigate to the client directory:
 ```
 cd client
 python client.py
-
 ```
 
 **Usage**
