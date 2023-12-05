@@ -38,8 +38,8 @@ Clone the GitHub repository:
 
 ```
 
-git clone <https://github.com/[your-github-username]/mvcc-flask-python.git>
-cd mvcc-flask-python
+git clone https://github.com/codewithhritik/273-mvcc.git
+cd 273-mvcc
 
 ```
 
